@@ -1,2 +1,2 @@
-# RouC
-June, 12...
+# RouC GitHub Pages 
+idk what to write here
