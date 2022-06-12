@@ -8,8 +8,8 @@ This bot was created a year ago (in 12.06.2021), but this repo contains *reloade
 Also all sources was opened for everyone, so you can contribute to future of RouC!
 
 ## Features:
-Nothing for now :( <!--
-* Moderation (IN PROGRESS) 
+Nothing for now :(
+<!--* Moderation (IN PROGRESS) 
 * - Basic moderation commands (ban, unban, kick, mute or timeout, warn-system)
 * - Busy Mode for moderators
 * - Automoderation (for CAPSLOCK, "bad words", etc.)
@@ -32,7 +32,6 @@ Nothing for now :( <!--
 * Economy (IN PROGRESS)
 * - Standard economy commands
 * Other
-* - Level system
--->
+* - Level system -->
 ## Contributing
 See [CONTRIBUTING.md](https://github.com/EgorBron/RouC/CONTRIBUTING.md) for more info.
