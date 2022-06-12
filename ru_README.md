@@ -1,4 +1,7 @@
 # RouC (Reloaded) 
+
+![Сервер разработки RouC](https://img.shields.io/discord/862265365350449182?color=%232813fb&label=Сервер%20разработки%20RouC&style=flat-square)
+
 Discord-бот с различным функционалом. 
 
 ## О боте
