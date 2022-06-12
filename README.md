@@ -1,5 +1,6 @@
 README доступен для прочтения на русском. [Нажмите здесь](https://github.com/EgorBron/RouC/blob/master/ru_README.md), чтобы перейти. 
 # RouC (Reloaded) 
+![Rouc Dev. Server](https://img.shields.io/discord/862265365350449182?color=%232813fb&label=RouC%20Dev.%20server&style=flat-square)
 Discord bot with random functionality.
 
 ## About
