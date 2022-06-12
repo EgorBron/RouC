@@ -24,8 +24,8 @@ SOFTWARE.
 import disnake
 import os
 import aeval
-from roucore import RoucBot
-from roucore.ext import commands
+from roucore.bot import RoucBot
+from disnake.ext import commands
 from roucore.configuration import ConfigAcceptor
 
 bot = RoucBot(ConfigAcceptor(seed=os.environ['ROUCSEED']))
@@ -40,10 +40,9 @@ async def custom_ready_event():
 @bot.command(
     name = 'eval',
     aliases = ['evaulate', 'exec', 'execute', 'выполнитькод'], 
-    run_filters = [commands.filters.bot_owners_only], 
-    short_description = bot.new_translatable_text('bot.commands.eval.sdecription'),
-    long_description = bot.new_translatable_text('bot.commands.eval.ldescription'),
-    allow_slash_command = False
+    #run_filters = [commands.filters.bot_owners_only], 
+    brief = "bot.commands.eval.brief,
+    description = bot.commands.eval.description'
 )
 async def __eval(ctx: commands.Context, *, to_eval: str = None):
     await aeval.aeval(to_eval)
