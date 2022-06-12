@@ -34,4 +34,4 @@ RouC - очередной бот для Discord, написанный на Pytho
 * - Система уровней -->
 
 ## Вклад в разработку <!-- просто я хз как Contributig перевести -->
-Посмотрите [CONTRIBUTING.md](https://github.com/EgorBron/RouC/CONTRIBUTING.md), чтобы узнать подробнее.
+Посмотрите [CONTRIBUTING.md](https://github.com/EgorBron/RouC/blob/master/CONTRIBUTING.md), чтобы узнать подробнее.
