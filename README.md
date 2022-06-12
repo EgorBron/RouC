@@ -1,4 +1,4 @@
-README доступен для прочтения на русском. [Нажмите здесь](https://github.com/EgorBron/RouC/ru_README.md), чтобы перейти. 
+README доступен для прочтения на русском. [Нажмите здесь](https://github.com/EgorBron/RouC/blob/master/ru_README.md), чтобы перейти. 
 # RouC (Reloaded) 
 Discord bot with random functionality.
 
@@ -34,4 +34,4 @@ Nothing for now :(
 * Other
 * - Level system -->
 ## Contributing
-See [CONTRIBUTING.md](https://github.com/EgorBron/RouC/CONTRIBUTING.md) for more info.
+See [CONTRIBUTING.md](https://github.com/EgorBron/RouC/blob/master/CONTRIBUTING.md) for more info.
