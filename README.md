@@ -1,3 +1,4 @@
+README доступен для прочтения на русском. [Нажмите здесь](https://github.com/EgorBron/RouC/ru_README.md), чтобы перейти. 
 # RouC (Reloaded) 
 Discord bot with random functionality.
 
