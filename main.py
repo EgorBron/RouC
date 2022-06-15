@@ -41,8 +41,8 @@ async def custom_ready_event():
     name = 'eval',
     aliases = ['evaulate', 'exec', 'execute', 'выполнитькод'], 
     #run_filters = [commands.filters.bot_owners_only], 
-    brief = "bot.commands.eval.brief,
-    description = bot.commands.eval.description'
+    brief = "bot.commands.eval.brief",
+    description = 'bot.commands.eval.description'
 )
 async def __eval(ctx: commands.Context, *, to_eval: str = None):
     await aeval.aeval(to_eval)
