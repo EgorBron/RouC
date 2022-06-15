@@ -6,7 +6,22 @@ If you have found any vulnerability in any version of bot, please, create an iss
 
 ## Contributing to sources of bot.
 Feel free to create forks/PRs with improvements. 
-<!--Just follow this:
+**Just follow this:**
+
+1. Create a fork
+2. Clone your fork:
+
 ```sh
-# create fork and do your incredible work
-git commit -m-->
+git clone https://github.com/You/YourForkRepo.git
+```
+
+3. Do your incredible work
+4. Commit:
+
+```sh
+git checkout -b BranchWithChanges # needed once
+git comit -m "Commit description"
+git push origin BranchWithChanges
+```
+
+5. Open a pull request with comparsion to your branch with improvements
