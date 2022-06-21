@@ -44,6 +44,9 @@ async def custom_ready_event():
     description = 'bot.commands.eval.description'
 )
 async def __eval(ctx: commands.Context, *, to_eval: str = None):
-    await aeval.aeval(to_eval)
+    if ctx.author.id not in bot.owner_ids: return await ctx.send(":x:")
+    try: r = await aeval.aeval(to_eval, globals(), locals())
+    except Exception as e: r = e
+    await ctx.send(str(r))
 
 bot.run_safe()
