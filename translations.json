@@ -1,0 +1,47 @@
+{
+    "bot": {
+        "copyright": "Copyright (c) 2022 RouC Team, EgorBron, Blusutils. All rights reserved. Built on RouC bot.",
+        "funcs": {
+            "minify_text": {
+                "first": {
+                    "ru": "и ещё",
+                    "en": "and"
+                },
+                "second": {
+                    "ru": "символов",
+                    "en": "other symbols"
+                }
+            }
+        },
+        "commands": {
+            "eval": {
+                "brief": {
+                    "ru": "Выполнить код",
+                    "en": "Execute code"
+                },
+                "description": {
+                    "ru": "Выполняет введённый Python-код в файле бота. Необходимо для экстренной отладки. Доступно только разработчикам-владельцам.",
+                    "en": "Executes inputted Python code in bot file. Needed for emergency debug. Available only for developers."
+                },
+                "body": {
+                    "success": {
+                        "ru": "Успешно выполнено за {0}",
+                        "en": "Succefulity executed in {0}"
+                    },
+                    "failed": {
+                        "ru": "Ошибка ({0} прошло от запуска)",
+                        "en": "Error ({0} passed after run)"
+                    },
+                    "error": {
+                        "ru": "Ошибка:",
+                        "en": "Error:"
+                    },
+                    "output": {
+                        "ru": "Выходные данные:",
+                        "en": "Output data:"
+                    }
+                }
+            }
+        }
+    }
+}

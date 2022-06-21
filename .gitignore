@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Lavalink server
+Lavalink.jar
+
+# Logs
+/lavalink_logs
+/rouc_logs

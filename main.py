@@ -1,6 +1,6 @@
 """MIT License
 
-Copyright (c) 2022 EgorBron, Blusutils
+Copyright (c) 2022 RouC Team, EgorBron, Blusutils
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,12 +30,11 @@ from roucore.configuration import ConfigAcceptor
 
 bot = RoucBot()#ConfigAcceptor(os.environ['ROUCFG']))
 
-@bot.listen(event='on_ready')
+@bot.listen(name='on_ready')
 async def custom_ready_event():
     bot.logger.success('Hello world!')
-    swstat = await bot.swish.ping() < 1000
-    dbstat = await bot.get_database_status()
-    bot.logger.debug(f'Swish is {swstat and "working" or "not responding"}. Database is {dbstat and "working" or "not responding"}.')
+    #dbstat = await bot.get_database_status()
+    #bot.logger.debug(f'Database is dbstat and "working" or "not responding".')
 
 @bot.command(
     name = 'eval',

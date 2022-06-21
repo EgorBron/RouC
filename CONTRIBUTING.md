@@ -24,4 +24,5 @@ git comit -m "Commit description"
 git push origin BranchWithChanges
 ```
 
-5. Open a pull request with comparsion to your branch with improvements
+5. Open a pull request with comparsion between your branch with improvements and [`alpha`](https://github.com/EgorBron/RouC/tree/alpha) version branch. 
+> **NOTE:** compare only with [`alpha`](https://github.com/EgorBron/RouC/tree/alpha) branch in original repo!
