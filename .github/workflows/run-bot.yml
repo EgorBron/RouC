@@ -25,7 +25,7 @@ jobs:
     #    python-version: "3.9.6"
     - name: Check dir
       run: |
-        python -c "import os; with open('t.txt', 'w') as f: f.write(os.path.abspath('.'))"
+        python -c "import os; f = open('t.txt', 'w'); f.write(os.path.abspath('.')); f.close)("
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
