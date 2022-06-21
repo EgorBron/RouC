@@ -1,6 +1,9 @@
 {
     "bot": {
-        "copyright": "Copyright (c) 2022 RouC Team, EgorBron, Blusutils. All rights reserved. Built on RouC bot.",
+        "copyright": {
+            "ru": "© 2022 RouC Team, EgorBron, Blusutils. Все права сохранены. Построено на RouC bot.",
+            "en": "© 2022 RouC Team, EgorBron, Blusutils. All rights reserved. Built on RouC bot."
+        },
         "funcs": {
             "minify_text": {
                 "first": {
