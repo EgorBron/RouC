@@ -23,9 +23,6 @@ jobs:
     #  uses: actions/setup-python@v3
     #  with:
     #    python-version: "3.9.6"
-    - name: Check dir
-      run: |
-        python -c "import os; f = open('t.txt', 'w'); f.write(os.path.abspath('.')); f.close()"
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
