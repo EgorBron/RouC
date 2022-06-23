@@ -16,6 +16,20 @@
                 }
             }
         },
+        "errors": {
+            "errword": {
+                "ru": "Ошибка",
+                "en": "Error"
+            },
+            "unknown_member": {
+                "ru": "Не удалось найти пользователя `{0}`. \n{1}",
+                "en": "Unable to found user {0}. \n{1}"
+            },
+            "unknown_member_phrases": {
+                "ru": [""],
+                "en": [""]
+            }
+        },
         "commands": {
             "eval": {
                 "brief": {
@@ -42,6 +56,26 @@
                     "output": {
                         "ru": "Выходные данные:",
                         "en": "Output data:"
+                    }
+                }
+            },
+            "avatar": {
+                "brief": {
+                    "ru": "Показать аватар пользователя",
+                    "en": "Show user avatar"
+                },
+                "description": {
+                    "ru": "Показывает аватар: ваш или указанного пользователя.",
+                    "en": "Shows avatar: your or of passed user"
+                },
+                "body": {
+                    "author_avatar": {
+                        "ru": "Ваш аватар:",
+                        "en": "Your avatar:"
+                    },
+                    "member_avatar": {
+                        "ru": "Аватар {0}:",
+                        "en": "Avatar of {0}:"
                     }
                 }
             }

@@ -134,3 +134,7 @@ Lavalink.jar
 # Logs
 /lavalink_logs
 /rouc_logs
+
+# Temporary files (just for tests)
+tmp.py
+/tmp

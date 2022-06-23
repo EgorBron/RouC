@@ -29,11 +29,12 @@ import jinja2
 import asyncpg
 import ujson
 from roucore.configuration import ConfigAcceptor
+from roucore.localization import Localizator
 from disnake.ext import commands
 from loguru import logger
 
 class RoucBot(commands.Bot):
-    def __init__(self):#, cfg_acceptor: ConfigAcceptor):
+    def __init__(self, cogs_dir: os.PathLike):#, cfg_acceptor: ConfigAcceptor):
         """RouC Bot base
 
         Args:
@@ -42,8 +43,12 @@ class RoucBot(commands.Bot):
         #d = cfg_acceptor.recrypt_and_get()
         # list of "owners" for bot based on this code
         self.creators = [555638466365489172]
+        # default embeds color
+        self.defaultcolor = 0x2813fb
         # dict with translations
-        self.translations: dict =  {}
+        self.translations = Localizator()
+        # directory contains cogs
+        self.cogsdir = cogs_dir
         # for "uptime" feature (combined with process start time from psutil.Process().create_time)
         self.started_at: int = 0
         # for "botinfo"
@@ -85,26 +90,35 @@ class RoucBot(commands.Bot):
         if not os.path.exists('translations.json'):
             self.logger.error('Translations file not found!')
             raise OSError('Translations file not found!')
-        with open('translations.json', 'r') as tf:
-            self.translations = ujson.load(tf)
+        self.translations.load('translations.json')
+
+    async def getlocale(self, source: typing.Union[disnake.Guild, disnake.User, int]):
+        source = self.get_guild(source) if isinstance(source, int) else source
+        if isinstance(source, disnake.Guild):
+            await self.db.fetchrow("SELECT locale FROM guilds")
 
     # translate text for specified object
-    def translate(self, source: typing.Union[disnake.Guild, disnake.User, int], source_string: str):
+    def translate(self, source_string: str, source_language = 'en'):
         #self.db.fetchrow()
-        return ""
+        #srclang = asyncio.run(self.getlocale(source))
+        return self.translations.get(source_string)[source_language]
 
     # minify text for places with characters limit
-    def _minify_text(self, visible_characters: int, limit: int, inp_text: typing.Any, source: typing.Union[disnake.Guild, disnake.User, int]):
+    def _minify_text(self, visible_characters: int, limit: int, inp_text: typing.Any, source_language='en'):
         # sry guys, but... it made this in one line
-        return f'{str(inp_text)[:visible_characters]}...\n...{self.translate(source, "bot.funcs.minify_text.first")} {len(str(inp_text).replace(str(inp_text)[visible_characters:], ""))} {self.translate(source, "bot.funcs.minify_text.second")}...' if len(str(inp_text)) >= limit else str(inp_text)
+        return f'{str(inp_text)[:visible_characters]}...\n...{self.translate("bot.funcs.minify_text.first", source_language)} {len(str(inp_text).replace(str(inp_text)[visible_characters:], ""))} {self.translate("bot.funcs.minify_text.second", source_language)}...' if len(str(inp_text)) >= limit else str(inp_text)
 
     # minify text for embeds "field value"
-    def minify_text_1024(self, inp_text: typing.Any, source: typing.Union[disnake.Guild, disnake.User, int]):
-       return self._minify_text(900, 1024, inp_text, source)
+    def minify_text_1024(self, inp_text: typing.Any, source_language='en'):
+       return self._minify_text(900, 1024, inp_text, source_language)
 
     # same as above, but for embeds "field name"
-    def minify_text_256(self, inp_text: typing.Any, source: typing.Union[disnake.Guild, disnake.User, int]):
-        return self._minify_text(132, 256, inp_text, source)
+    def minify_text_256(self, inp_text: typing.Any, source_language='en'):
+        return self._minify_text(132, 256, inp_text, source_language)
+
+    # prepare error embed
+    def errembed(self, errtxt: str, srclang: str = 'en'):
+        return disnake.Embed(title=f'RouC | {self.translate("bot.errors.errword", srclang)}', description=errtxt, color=0xfb3613).set_footer(text=self.translate('bot.copyright'))
 
     # default events
     async def on_connect(self):
@@ -113,4 +127,9 @@ class RoucBot(commands.Bot):
         self.db = await asyncpg.connect('postgresql://postgres@localhost/bots', user='roucbot', password='roucbottest')
 
     async def on_ready(self):
+        self.load_extensions(self.cogsdir)
         self.logger.success("Started")
+
+    async def on_disconnect(self):
+        self.db.close()
+        self.logger.info("Disconnected")

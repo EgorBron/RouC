@@ -21,6 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+from typing import Optional
 import disnake
 import os
 import aeval
@@ -28,13 +29,27 @@ from roucore.bot import RoucBot
 from disnake.ext import commands
 from roucore.configuration import ConfigAcceptor
 
-bot = RoucBot()#ConfigAcceptor(os.environ['ROUCFG']))
+bot = RoucBot(os.path.abspath('./cogs'))#ConfigAcceptor(os.environ['ROUCFG']))
+bot.remove_command('help')
 
 @bot.listen(name='on_ready')
 async def custom_ready_event():
     bot.logger.success('Hello world!')
     #dbstat = await bot.get_database_status()
     #bot.logger.debug(f'Database is dbstat and "working" or "not responding".')
+
+@bot.command(
+    name="help",
+    aliases=['h', 'хелп', 'помощь']
+)
+async def __help(ctx, command: Optional[str]):
+    await ctx.send('Пока что help не работает\nFor now help isn\'t working')
+    for cmd in bot.commands:
+        pass
+
+@bot.command()
+async def cvt(ctx, m: disnake.Member = None):
+    await ctx.send(str(m))
 
 @bot.command(
     name = 'eval',
