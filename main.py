@@ -47,10 +47,6 @@ async def __help(ctx, command: Optional[str]):
     for cmd in bot.commands:
         pass
 
-@bot.command()
-async def cvt(ctx, m: disnake.Member = None):
-    await ctx.send(str(m))
-
 @bot.command(
     name = 'eval',
     aliases = ['evaulate', 'exec', 'execute', 'выполнитькод'],
@@ -63,5 +59,25 @@ async def __eval(ctx: commands.Context, *, to_eval: str = None):
     try: r = await aeval.aeval(to_eval, globals(), locals())
     except Exception as e: r = e
     await ctx.send(str(r))
+
+@bot.command(name='load')
+async def __cog_load(ctx: commands.Context, *, extname = ''):
+    if extname == '':
+        succ = bot.load_extensions()
+        await ctx.send(embed=disnake.Embed(title='Multiple cogs load', description=f'Successful loads: {succ}/{len(os.listdir(bot.cogsdir))}'))
+
+@bot.command()
+async def delemotes(ctx: commands.Context):
+    if ctx.author.id not in bot.owner_ids: return await ctx.send(":x:")
+    for emoji in ctx.guild.emojis:
+        await emoji.delete()
+        await ctx.send(emoji.name+" deleted")
+
+@bot.command()
+async def moveemotes(ctx: commands.Context, target: disnake.Guild):
+    if ctx.author.id not in bot.owner_ids: return await ctx.send(":x:")
+    for emoji in ctx.guild.emojis:
+        e = await target.create_custom_emoji(name=emoji.name, image=await emoji.read(), roles = emoji.roles, reason=f"Export emojis from {ctx.guild.name} ({ctx.guild.id})")
+        await ctx.send(e.name+" created")
 
 bot.run_safe()

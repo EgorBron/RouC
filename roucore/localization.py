@@ -24,7 +24,7 @@ class Localizator(LocalizationProtocol):
         Specifies whether :meth:`.get` raises an exception if localizations for a provided key couldn't be found.
     """
 
-    def __init__(self, *, strict: bool=False):
+    def __init__(self, *, strict: bool=True):
         self.strict = strict
 
         self._loc = defaultdict(dict)
@@ -54,7 +54,7 @@ class Localizator(LocalizationProtocol):
         outdict = {}
         for i in key.split('.'):
             outdict = self._loc.get(i) if outdict == {} else outdict.get(i)
-        if outdict == {} and self.strict:
+        if (outdict == {} or outdict is None) and self.strict:
             raise LocalizationKeyError(f'Error: No localizations for key \'{key}\' found')
         return outdict
 

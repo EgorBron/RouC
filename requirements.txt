@@ -10,3 +10,4 @@ aeval # async eval
 jinja2 # templating
 ujson # fast json lib
 loguru # logging
+blusutils # random utils

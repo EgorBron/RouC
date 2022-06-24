@@ -98,7 +98,7 @@ class RoucBot(commands.Bot):
             await self.db.fetchrow("SELECT locale FROM guilds")
 
     # translate text for specified object
-    def translate(self, source_string: str, source_language = 'en'):
+    def translate(self, source_string: str, source_language = 'en') -> str:
         #self.db.fetchrow()
         #srclang = asyncio.run(self.getlocale(source))
         return self.translations.get(source_string)[source_language]
@@ -120,6 +120,21 @@ class RoucBot(commands.Bot):
     def errembed(self, errtxt: str, srclang: str = 'en'):
         return disnake.Embed(title=f'RouC | {self.translate("bot.errors.errword", srclang)}', description=errtxt, color=0xfb3613).set_footer(text=self.translate('bot.copyright'))
 
+    # own cogs loader
+    def load_extensions(self):
+        success_loads = 0
+        for extension in disnake.utils.search_directory(self.cogsdir):
+            try:
+                self.load_extension(extension)
+                success_loads += 1
+            except commands.NoEntryPointError:
+                self.logger.error(f"'{extension}' does not have entrypoint function (setup). Skipped")
+            except (ImportError, commands.errors.ExtensionNotFound):
+                self.logger.error(f"'{extension} not found. Skipped")
+            except Exception as e:
+                self.logger.error(f"'{extension}' has an error. Skipped. Error (no stack traceback):\n\t\t{e}")
+        return success_loads
+
     # default events
     async def on_connect(self):
         self.logger.debug("Connected")
@@ -127,7 +142,7 @@ class RoucBot(commands.Bot):
         self.db = await asyncpg.connect('postgresql://postgres@localhost/bots', user='roucbot', password='roucbottest')
 
     async def on_ready(self):
-        self.load_extensions(self.cogsdir)
+        self.load_extensions()
         self.logger.success("Started")
 
     async def on_disconnect(self):

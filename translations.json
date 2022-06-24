@@ -21,11 +21,19 @@
                 "ru": "Ошибка",
                 "en": "Error"
             },
-            "unknown_member": {
+            "unknown_user": {
                 "ru": "Не удалось найти пользователя `{0}`. \n{1}",
                 "en": "Unable to found user {0}. \n{1}"
             },
             "unknown_member_phrases": {
+                "ru": [""],
+                "en": [""]
+            },
+            "is_bot": {
+                "ru": "Пользователь `{0}` является ботом. \n{1}",
+                "en": "User `{0}` is bot. \n{1}"
+            },
+            "is_bot_phrases": {
                 "ru": [""],
                 "en": [""]
             }
@@ -70,12 +78,72 @@
                 },
                 "body": {
                     "author_avatar": {
-                        "ru": "Ваш аватар:",
-                        "en": "Your avatar:"
+                        "ru": "Ваш аватар, {0}:",
+                        "en": "Your avatar, {0}:"
                     },
                     "member_avatar": {
                         "ru": "Аватар {0}:",
                         "en": "Avatar of {0}:"
+                    }
+                }
+            },
+            "user": {
+                "brief": {
+                    "ru": "Показать информацию о пользователе",
+                    "en": "Show info about user"
+                },
+                "description": {
+                    "ru": "Показывает информацию о Вас или об указанном пользователе.",
+                    "en": "Shows info about you or provided user."
+                },
+                "body": {
+                    "title": {
+                        "ru": "Информация о {0}",
+                        "en": "Information about {0}"
+                    },
+                    "username": {
+                        "ru": "Имя и тег: {0}",
+                        "en": "Name and tag: {0}"
+                    },
+                    "userid": {
+                        "ru": "ID: {0}",
+                        "en": "ID: {0}"
+                    },
+                    "joineddiscord": {
+                        "ru": "Присоединился к Discord",
+                        "en": "Joined to Discord"
+                    },
+                    "joinedserver": {
+                        "ru": "Присоединился к серверу",
+                        "en": "Joined to server"
+                    },
+                    "standardstatus": {
+                        "pre": {
+                            "ru": "Статус",
+                            "en": "Status"
+                        },
+                        "enum": {
+                            "online": {
+                                "ru": "В сети",
+                                "en": "Online"
+                            },
+                            "idle": {
+                                "ru": "Не активен",
+                                "en": "Idle"
+                            },
+                            "dnd": {
+                                "ru": "Не беспокоить",
+                                "en": "Do not disturb"
+                            },
+                            "offline": {
+                                "ru": "Не в сети",
+                                "en": "Offline"
+                            },
+                            "streaming": {
+                                "ru": "Стримит",
+                                "en": "Streaming"
+                            }
+                        }
                     }
                 }
             }
