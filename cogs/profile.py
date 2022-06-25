@@ -11,12 +11,11 @@ class Profile(commands.Cog):
         self.bot.logger.debug('Cog "Profile" loaded')
 
     @commands.command(
-        name = 'avatar',
         aliases = ['аватар'],
         brief = 'bot.commands.avatar.brief',
         description = 'bot.commands.avatar.description'
     )
-    async def __avatar(self, ctx: commands.Context, member = None):
+    async def avatar(self, ctx: commands.Context, member = None):
         try: 
             member = await commands.converter.MemberConverter().convert(ctx, member) if member is not None else ctx.author
             title = self.bot.translate('bot.commands.avatar.body.author_avatar') if ctx.author == member else self.bot.translate('bot.commands.avatar.body.member_avatar')
@@ -29,12 +28,11 @@ class Profile(commands.Cog):
             await ctx.send(embed=self.bot.errembed(self.bot.translate('bot.errors.unknown_user').format(member, "")))
 
     @commands.command(
-        name = 'user',
         aliases = ['юзер', 'пользователь', 'aboutuser', 'userinfo', 'опользователе', 'profile', 'профиль'],
         brief = 'bot.commands.user.brief',
         description = 'bot.commands.user.description'
     )
-    async def __user(self, ctx: commands.Context, user: str = None):
+    async def user(self, ctx: commands.Context, user: str = None):
         translate = lambda s: self.bot.translate(s, 'en') # alias
         try:
             user = await commands.converter.MemberConverter().convert(ctx, user) if user is not None else ctx.author

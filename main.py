@@ -39,22 +39,20 @@ async def custom_ready_event():
     #bot.logger.debug(f'Database is dbstat and "working" or "not responding".')
 
 @bot.command(
-    name="help",
     aliases=['h', 'хелп', 'помощь']
 )
-async def __help(ctx, command: Optional[str]):
+async def help(ctx, command: Optional[str]):
     await ctx.send('Пока что help не работает\nFor now help isn\'t working')
     for cmd in bot.commands:
         pass
 
 @bot.command(
-    name = 'eval',
     aliases = ['evaulate', 'exec', 'execute', 'выполнитькод'],
     #run_filters = [commands.filters.bot_owners_only], 
     brief = "bot.commands.eval.brief",
     description = 'bot.commands.eval.description'
 )
-async def __eval(ctx: commands.Context, *, to_eval: str = None):
+async def eval(ctx: commands.Context, *, to_eval: str = None):
     if ctx.author.id not in bot.owner_ids: return await ctx.send(":x:")
     try: r = await aeval.aeval(to_eval, globals(), locals())
     except Exception as e: r = e
