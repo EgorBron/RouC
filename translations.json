@@ -16,6 +16,12 @@
                 }
             }
         },
+        "globals": {
+            "none": {
+                "ru": "отсутствует",
+                "en": "none"
+            }
+        },
         "errors": {
             "errword": {
                 "ru": "Ошибка",
@@ -36,6 +42,30 @@
             "is_bot_phrases": {
                 "ru": [""],
                 "en": [""]
+            },
+            "self_inapplicable": {
+                "ru": "Это действие нельзя совершить с собой.",
+                "en": "This action cannot be done to yourself."
+            },
+            "other_inapplicable": {
+                "ru": "Это действие нельзя совершить с данным пользователем.",
+                "en": "This action cannot be done to this user."
+            },
+            "unknown_error": {
+                "ru": "Произошла неизвестная ошибка. {0}",
+                "en": "An unknown error has occurred. {0} "
+            },
+            "unexpected_error": {
+                "ru": "Произошла неожиданная ошибка. {0}",
+                "en": "An unexpected error has occurred. {0}"
+            },
+            "errcode": {
+                "ru": "Код ошибки: `{0}`",
+                "en": "Error code: `{0}`"
+            },
+            "errtext": {
+                "ru": "Текст ошибки: `{0}`",
+                "en": "Error text: `{0}`"
             }
         },
         "commands": {
@@ -144,6 +174,64 @@
                                 "en": "Streaming"
                             }
                         }
+                    },
+                    "custom_status": {
+                        "ru": "Пользовательский статус: ",
+                        "custom_status": "Custom status: "
+                    },
+                    "activity": {
+                        "title": {
+                            "ru": "Активность:",
+                            "en": "Activity:"
+                        },
+                        "playing": {
+                            "ru": "Играет в `{0}`",
+                            "en": "Playing `{0}`"
+                        },
+                        "competing": {
+                            "ru": "Соревнуется в `{0}`",
+                            "en": "Competes in `{0}`"
+                        },
+                        "watching": {
+                            "ru": "Смотрит `{0}`",
+                            "en": "Watching `{0}`"
+                        },
+                        "streaming": {
+                            "ru": "Стримит `{0}`",
+                            "en": "Streaming `{0}`"
+                        },
+                        "listening": {
+                            "ru": "Слушает `{0}`",
+                            "en": "Listening to `{0}`"
+                        },
+                        "spotify": {
+                            "ru": "Слушает в Spotify: `{0}`",
+                            "en": "Listening in Spotify: `{0}`"
+                        }
+                    }
+                }
+            },
+            "trydo": {
+                "brief": {
+                    "ru": "Попытаться сделать что-то",
+                    "en": "Try to do something"
+                },
+                "description": {
+                    "ru": "Попытаться сделать что-то при РП. Результатом будет удача или неудача.",
+                    "en": "Try to do something when you roleplaying. As result you get success or fail."
+                },
+                "body": {
+                    "success": {
+                        "ru": "Успешно",
+                        "en": "Success"
+                    },
+                    "fail": {
+                        "ru": "Неудача",
+                        "en": "Fail"
+                    },
+                    "tryed": {
+                        "ru": "попытался/попыталась",
+                        "en": "tryed"
                     }
                 }
             }

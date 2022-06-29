@@ -53,7 +53,7 @@ class Localizator(LocalizationProtocol):
         """
         outdict = {}
         for i in key.split('.'):
-            outdict = self._loc.get(i) if outdict == {} else outdict.get(i)
+            outdict = self._loc.get(i) if outdict == {} or outdict is None else outdict.get(i)
         if (outdict == {} or outdict is None) and self.strict:
             raise LocalizationKeyError(f'Error: No localizations for key \'{key}\' found')
         return outdict
