@@ -19,7 +19,8 @@ class RoleplayMain(commands.Cog):
         description="bot.commands.trydo.description"
     )
     async def trydo(self, ctx, *, do):
-        translate = lambda s: self.bot.translate("bot.commands.trydo."+s, 'en') # alias
+        lang = (await self.bot.db.fetchrow(f"""SELECT locale FROM guilds WHERE id = {ctx.guild.id}"""))['locale']
+        translate = lambda s: self.bot.translate("bot.commands.trydo."+s, lang) # alias
         result, coloring = (translate("body.success"), 0x55ff55) if random.choice((True, False)) else (translate("body.fail"), 0xff5555)
         await ctx.send(embed = disnake.Embed(title = f'{ctx.author.name} {translate("body.tryed")}:', description = f'*{do}*', color = coloring).add_field(name = f'{result}', value = '** **').set_author(name = str(ctx.author), icon_url = ctx.author.avatar.url))
 
@@ -46,13 +47,14 @@ class RoleplayActions(commands.Cog):
                     return r.status
     
     async def build_embed(self, r, author, action, target=None):
+        lang = (await self.bot.db.fetchrow(f"""SELECT locale FROM guilds WHERE id = {author.guild.id}"""))['locale']
         if target is not None:
             if author == target:
-                return self.bot.errembed(self.bot.translate("bot.errors.self_inapplicable"))
+                return self.bot.errembed(self.bot.translate("bot.errors.self_inapplicable", lang))
         if not isinstance(r, int):
             return disnake.Embed(title=f"{author.name} {action} {target.name if target is not None else ''}", colour=self.bot.defaultcolor).set_image(url=r)
         else:
-            return self.bot.errembed(self.bot.translate("bot.errprs.unexpected_error").format(self.bot.translate("bot.errors.errcode").format(r)))
+            return self.bot.errembed(self.bot.translate("bot.errprs.unexpected_error", lang).format(self.bot.translate("bot.errors.errcode", lang).format(r)))
 
 def setup(bot):
     bot.add_cog(RoleplayMain(bot))

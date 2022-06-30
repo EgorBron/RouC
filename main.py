@@ -29,14 +29,8 @@ from roucore.bot import RoucBot
 from disnake.ext import commands
 from roucore.configuration import ConfigAcceptor
 
-bot = RoucBot(os.path.abspath('./cogs'))#ConfigAcceptor(os.environ['ROUCFG']))
+bot = RoucBot()#ConfigAcceptor(os.environ['ROUCFG']))
 bot.remove_command('help')
-
-@bot.listen(name='on_ready')
-async def custom_ready_event():
-    bot.logger.success('Hello world!')
-    #dbstat = await bot.get_database_status()
-    #bot.logger.debug(f'Database is dbstat and "working" or "not responding".')
 
 @bot.command(
     aliases=['h', 'хелп', 'помощь']
@@ -45,6 +39,17 @@ async def help(ctx, command: Optional[str]):
     await ctx.send('Пока что help не работает\nFor now help isn\'t working')
     for cmd in bot.commands:
         pass
+
+@bot.command()
+async def setlocale(ctx: commands.Context, locale: str = None):
+    if not ctx.author.guild_permissions.administrator:
+        return await ctx.send(embed=bot.errembed(bot.translate('bot.errors.missing_user_permissions').format('administrator')))
+    if locale is None:
+        return await ctx.send(embed=bot.errembed(bot.translate('empty_locale')))
+    if locale not in bot.translations.get('available_locales'):
+        return await ctx.send(embed=bot.errembed(bot.translate('unsupported_locale').format(locale, ", ".join(bot.translations.get('available_locales')))))
+    await bot.db.execute(f"""UPDATE guilds SET locale='{locale}' WHERE id = {ctx.guild.id}""")
+    await ctx.send(embed=bot.succembed(bot.translate('locale_set_success', locale).format(locale), locale))
 
 @bot.command(
     aliases = ['evaulate', 'exec', 'execute', 'выполнитькод'],
@@ -58,18 +63,90 @@ async def eval(ctx: commands.Context, *, to_eval: str = None):
     except Exception as e: r = e
     await ctx.send(str(r))
 
+@bot.command()
+async def insertguild(ctx: commands.Context, guilds: commands.Greedy[disnake.Guild]):
+    if ctx.author.id not in bot.owner_ids: return await ctx.send(":x:")
+    if len(guilds) == 0: guilds = [ctx.guild]
+    for guild in guilds:
+        r = await bot.db.execute(f"""INSERT INTO guilds (id, locale, preferences, prefixes, channelsprefs, warns, automod) VALUES (
+                {guild.id},
+                'en',
+                '{{}}',
+                array['+'],
+                '{{}}',
+                '{{}}',
+                '{{}}'
+            )""")
+        await ctx.send(r)
+
+def load_text(result):
+    if result is None:
+        return "Cog successfully loaded"
+    elif result == "not_found":
+        return "Failed to load: cog not found"
+    elif result == "already_loaded":
+        return "Failed to load: cog already loaded"
+    elif result == "no_entrypoint":
+        return "Failed to load: cog does not have entrypoint (setup function)"
+    elif isinstance(result, Exception):
+        return "Failed to load: cog raised an error. More info in console output"
 @bot.command(name='load')
 async def __cog_load(ctx: commands.Context, *, extname = ''):
     if extname == '':
         succ = bot.load_extensions()
         await ctx.send(embed=disnake.Embed(title='Multiple cogs load', description=f'Successful loads: {succ}/{len(os.listdir(bot.cogsdir))}'))
+    else:
+        result = bot.load_extension(extname)
+        color = result is None and 0x00ff00 or 0xff0000
+        result = load_text(result)
+        await ctx.send(embed=disnake.Embed(title="Cog load - "+extname, description=result, color=color))
 
-@bot.command()
-async def delemotes(ctx: commands.Context):
-    if ctx.author.id not in bot.owner_ids: return await ctx.send(":x:")
-    for emoji in ctx.guild.emojis:
-        await emoji.delete()
-        await ctx.send(emoji.name+" deleted")
+def unload_text(result):
+    if result is None:
+        return "Cog successfully unloaded"
+    elif result == "not_found":
+        return "Failed to unload: cog not found"
+    elif result == "already_unloaded":
+        return "Failed to unload: cog already unloaded"
+    elif isinstance(result, Exception):
+        return "Failed to load: cog raised an error. More info in console output"
+
+@bot.command(name='unload')
+async def __cog_unload(ctx: commands.Context, *, extname = ''):
+    if extname == '':
+        allcogs = len(bot.cogs.keys())
+        succ = bot.unload_extensions() 
+        await ctx.send(embed=disnake.Embed(title='Multiple cogs unload', description=f'Successful loads: {succ}/{allcogs}'))
+    else:
+        result = bot.unload_extension(extname)
+        color = result is None and 0x00ff00 or 0xff0000
+        result = unload_text(result)
+        await ctx.send(embed=disnake.Embed(title="Cog unload - "+extname, description=result, color=color))
+
+@bot.command(name='reload')
+async def __cog_reload(ctx: commands.Context, *, extname = ''):
+    if extname == '':
+        allcogs = len(bot.cogs.keys())
+        succ_ul = bot.unload_extensions() 
+        succ_l = bot.load_extensions()
+        await ctx.send(embed=disnake.Embed(title='Multiple cogs reload', description=f'Successful unloads: {succ_ul}/{allcogs}\nSuccessful loads: {succ_l}/{len(os.listdir(bot.cogsdir))}'))
+    else:
+        result = bot.unload_extension(extname)
+        if result is not None:
+            return await ctx.send(embed=disnake.Embed(title="Cog reload - "+extname, description=f"Failed during unload: {unload_text(result)}", color=0xff0000))
+        result = bot.load_extension(extname)
+        if result is not None:
+            return await ctx.send(embed=disnake.Embed(title="Cog reload - "+extname, description=f"Failed during load: {unload_text(result)}", color=0xff0000))
+        await ctx.send(embed=disnake.Embed(title="Cog reload - "+extname, description=f"Cog successfully reloaded", color=0x00ff00))
+        
+
+
+# @bot.command()
+# async def delemotes(ctx: commands.Context):
+#     if ctx.author.id not in bot.owner_ids: return await ctx.send(":x:")
+#     for emoji in ctx.guild.emojis:
+#         await emoji.delete()
+#         await ctx.send(emoji.name+" deleted")
 
 @bot.command()
 async def moveemotes(ctx: commands.Context, target: disnake.Guild):
@@ -77,5 +154,7 @@ async def moveemotes(ctx: commands.Context, target: disnake.Guild):
     for emoji in ctx.guild.emojis:
         e = await target.create_custom_emoji(name=emoji.name, image=await emoji.read(), roles = emoji.roles, reason=f"Export emojis from {ctx.guild.name} ({ctx.guild.id})")
         await ctx.send(e.name+" created")
-
-bot.run_safe()
+try:
+    bot.run_safe()
+except RuntimeError:
+    pass

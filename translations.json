@@ -1,4 +1,17 @@
 {
+    "available_locales": ["en", "ru"],
+    "empty_locale": {
+        "ru": "Вы не указали язык!",
+        "en": "You didn't specified a language!"
+    },
+    "unsupported_locale": {
+        "ru": "Язык `{0}` пока что не поддерживается. Доступные языки:\n`{1}`",
+        "en": "Language `{0}` is not supported for now. Available languages:\n`{1}`"
+    },
+    "locale_set_success": {
+        "ru": "Успешно установлен язык `{0}` для этого сервера.",
+        "en": "Language `{0}` successfully set for this server."
+    },
     "bot": {
         "copyright": {
             "ru": "© 2022 RouC Team, EgorBron, Blusutils. Все права сохранены. Построено на RouC bot.",
@@ -21,6 +34,10 @@
                 "ru": "отсутствует",
                 "en": "none"
             }
+        },
+        "success": {
+            "ru": "Успешно",
+            "en": "Success"
         },
         "errors": {
             "errword": {
@@ -50,6 +67,20 @@
             "other_inapplicable": {
                 "ru": "Это действие нельзя совершить с данным пользователем.",
                 "en": "This action cannot be done to this user."
+            },
+            "missing_user_permissions": {
+                "ru": "У вас недостаточно прав для выполнения этой команды! Необходимые права:\n`{0}`",
+                "en": "You missing some permissions to run this command! Needed permissions:\n`{0}`"
+            },
+            "top_role_issues": {
+                "by_bot": {
+                    "ru": "Высшая роль целевого пользователя выше таковой роли у бота.\nРоль бота: {0}. Роль целевого пользователя: `{1}`",
+                    "en": "Top role of target user is higher than bot top role.\nBot role: {0}. Target user role: {1}"
+                },
+                "by_author": {
+                    "ru": "Высшая роль целевого пользователя выше таковой роли у вас.\nВаша роль: {0}. Роль целевого пользователя: `{1}`",
+                    "en": "Top role of target user is higher than your top role.\nYour role: {0}. Target user role: {1}"
+                }
             },
             "unknown_error": {
                 "ru": "Произошла неизвестная ошибка. {0}",
@@ -207,6 +238,10 @@
                         "spotify": {
                             "ru": "Слушает в Spotify: `{0}`",
                             "en": "Listening in Spotify: `{0}`"
+                        },
+                        "custom": {
+                            "ru": "Свой статус: `{0}`",
+                            "en": "Custom status: `{0}`"
                         }
                     }
                 }

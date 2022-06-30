@@ -16,16 +16,17 @@ class Profile(commands.Cog):
         description = 'bot.commands.avatar.description'
     )
     async def avatar(self, ctx: commands.Context, member = None):
+        lang = (await self.bot.db.fetchrow(f"""SELECT locale FROM guilds WHERE id = {ctx.guild.id}"""))['locale']
         try: 
             member = await commands.converter.MemberConverter().convert(ctx, member) if member is not None else ctx.author
-            title = self.bot.translate('bot.commands.avatar.body.author_avatar') if ctx.author == member else self.bot.translate('bot.commands.avatar.body.member_avatar')
+            title = self.bot.translate('bot.commands.avatar.body.author_avatar', lang) if ctx.author == member else self.bot.translate('bot.commands.avatar.body.member_avatar', lang)
             await ctx.send(embed=disnake.Embed(
                     title=title.format(member),
                     colour=self.bot.defaultcolor
                 ).set_image(url=member.avatar.url if member is not None else ctx.author.avatar.url)
             )
         except commands.errors.MemberNotFound:
-            await ctx.send(embed=self.bot.errembed(self.bot.translate('bot.errors.unknown_user').format(member, "")))
+            await ctx.send(embed=self.bot.errembed(self.bot.translate('bot.errors.unknown_user', lang).format(member, "")))
 
     @commands.command(
         aliases = ['юзер', 'пользователь', 'aboutuser', 'userinfo', 'опользователе', 'profile', 'профиль'],
@@ -33,7 +34,8 @@ class Profile(commands.Cog):
         description = 'bot.commands.user.description'
     )
     async def user(self, ctx: commands.Context, user: str = None):
-        translate = lambda s: self.bot.translate("bot.commands.user."+s, 'en') # alias
+        lang = (await self.bot.db.fetchrow(f"""SELECT locale FROM guilds WHERE id = {ctx.guild.id}"""))['locale']
+        translate = lambda s: self.bot.translate("bot.commands.user."+s, lang) # alias
         try:
             user = await commands.converter.MemberConverter().convert(ctx, user) if user is not None else ctx.author
         except commands.errors.MemberNotFound:
@@ -87,7 +89,9 @@ class Profile(commands.Cog):
                 activity = act.format(f'{user.activity.name} ({user.activity.twitch_name})')
             elif user.activity.type == disnake.ActivityType.listening:
                 activity = act.format(user.activity.title or user.activity.name)
-            elif user.activity.type in (disnake.ActivityType.watching, disnake.ActivityType.competing, disnake.ActivityType.playing):
+            # elif user.activity.type == disnake.ActivityType.custom:
+            #     pass
+            elif user.activity.type in (disnake.ActivityType.watching, disnake.ActivityType.competing, disnake.ActivityType.playing, disnake.ActivityType.custom):
                 activity = act.format(user.activity.name)
             useremb.add_field(
                 name = translate("body.activity.title"),

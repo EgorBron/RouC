@@ -34,7 +34,7 @@ from disnake.ext import commands
 from loguru import logger
 
 class RoucBot(commands.Bot):
-    def __init__(self, cogs_dir: os.PathLike):#, cfg_acceptor: ConfigAcceptor):
+    def __init__(self):#, cfg_acceptor: ConfigAcceptor):
         """RouC Bot base
 
         Args:
@@ -47,8 +47,8 @@ class RoucBot(commands.Bot):
         self.defaultcolor = 0x2813fb
         # dict with translations
         self.translations = Localizator()
-        # directory contains cogs
-        self.cogsdir = cogs_dir
+        # # directory contains cogs
+        # self.cogsdir = cogs_dir#+'/' if not cogs_dir.endswith('/') else cogs_dir
         # for "uptime" feature (combined with process start time from psutil.Process().create_time)
         self.started_at: int = 0
         # for "botinfo"
@@ -120,20 +120,56 @@ class RoucBot(commands.Bot):
     def errembed(self, errtxt: str, srclang: str = 'en'):
         return disnake.Embed(title=f'RouC | {self.translate("bot.errors.errword", srclang)}', description=errtxt, color=0xfb3613).set_footer(text=self.translate('bot.copyright'))
 
-    # own cogs loader
+    # prepare success embed
+    def succembed(self, succtxt: str, srclang: str = 'en'):
+        return disnake.Embed(title=f'RouC | {self.translate("bot.success", srclang)}', description=succtxt, color=0x13fb14).set_footer(text=self.translate('bot.copyright'))
+
+    # own cogs loaders
+    def load_extension(self, extension):
+        try:
+            super(commands.Bot, self).load_extension(f'cogs.{extension}' if not extension.startswith('cogs.') else extension)
+            return
+        except commands.ExtensionAlreadyLoaded:
+            self.logger.error(f"'{extension}' already loaded. Skipped")
+            return "already_loaded"
+        except commands.NoEntryPointError:
+            self.logger.error(f"'{extension}' does not have entrypoint function (setup). Skipped")
+            return "no_entrypoint"
+        except (ImportError, commands.errors.ExtensionNotFound):
+            self.logger.error(f"'{extension}' not found. Skipped")
+            return "not_found"
+        except Exception as e:
+            self.logger.error(f"'{extension}' has an error. Skipped. Error (no stack traceback):\n\t\t{e}")
+            return e
+
     def load_extensions(self):
         success_loads = 0
-        for extension in disnake.utils.search_directory(self.cogsdir):
-            try:
-                self.load_extension(extension)
+        for extension in disnake.utils.search_directory('./cogs'):
+            if self.load_extension(extension) is None:
                 success_loads += 1
-            except commands.NoEntryPointError:
-                self.logger.error(f"'{extension}' does not have entrypoint function (setup). Skipped")
-            except (ImportError, commands.errors.ExtensionNotFound):
-                self.logger.error(f"'{extension} not found. Skipped")
-            except Exception as e:
-                self.logger.error(f"'{extension}' has an error. Skipped. Error (no stack traceback):\n\t\t{e}")
         return success_loads
+
+    # same as above, but for unloading
+    def unload_extension(self, extension):
+        try:
+            super().unload_extension(f'cogs.{extension}')
+            return
+        except commands.ExtensionNotLoaded:
+            self.logger.error(f"'{extension}' already unloaded. Skipped")
+            return "already_unloaded"
+        except (ImportError, commands.errors.ExtensionNotFound):
+            self.logger.error(f"'{extension}' not found. Skipped")
+            return "not_found"
+        except Exception as e:
+            self.logger.error(f"'{extension}' has an error. Skipped. Error (no stack traceback):\n\t\t{e}")
+            return e
+
+    def unload_extensions(self):
+        success_unloads = 0
+        for extension in self.cogs:
+            if self.unload_extension(f'cogs.{extension}') is None:
+                success_unloads += 1
+        return success_unloads
 
     # default events
     async def on_connect(self):
