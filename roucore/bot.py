@@ -26,7 +26,7 @@ import typing
 import disnake
 import os, sys
 import jinja2
-import asyncpg
+from motor.motor_asyncio import AsyncIOMotorClient
 import ujson
 from roucore.configuration import ConfigAcceptor
 from roucore.localization import Localizator
@@ -60,7 +60,7 @@ class RoucBot(commands.Bot):
         logger.add('rouc_logs/log_{time:YYYY-MM-DD}.log', level = 'DEBUG', format = '[{time:YYYY-MM-DD HH:mm:ss}] {level}: at {file} ({function}, line {line}):\n\t{message}', colorize = False, backtrace = False, diagnose = True, enqueue = True, encoding = 'utf-8')
         self.logger = logger
         # postgresql db
-        self.db: asyncpg.connection.Connection = None
+        self.db: AsyncIOMotorClient = AsyncIOMotorClient('mongodb://localhost:27017').roucdb
         # gateway intents
         intents = disnake.Intents(bans=True, emojis=True, guilds=True, members=True, voice_states=True, messages=True, message_content=True, reactions=True, presences=True)
         # init bot
@@ -74,13 +74,9 @@ class RoucBot(commands.Bot):
         )
     # multiprefix
     async def get_prefix(self, message):
-        prefix = (await self.db.fetchrow(f"""SELECT prefix FROM guilds WHERE id = {message.guild.id}"""))
+        prefix = await self.db.guilds.find_one({'id': message.guild.id})
         prefix = prefix['prefix'] if prefix is not None else '+'
-        return [prefix, self.user.mention] # multiprefix will be added soon. also when_mentioned_or not working, idk why
-
-    @staticmethod
-    def connect_to_db(address, username, password):
-        return asyncio.run()
+        return [prefix, self.user.mention] # when_mentioned_or not working, idk why
 
     # same as "bot.run", but token is hidden from other code!
     def run_safe(self):
@@ -105,7 +101,8 @@ class RoucBot(commands.Bot):
     #         await self.db.fetchrow("SELECT locale FROM guilds")
 
     async def getlang(self, guild: disnake.Guild):
-        return (await self.db.fetchrow(f"""SELECT locale FROM guilds WHERE id = {guild.id}"""))['locale']
+        result = await self.db.guilds.find_one({'id': guild.id})
+        return result['locale'] if result is not None else 'en'
 
     # minify text for places with characters limit
     def _minify_text(self, visible_characters: int, limit: int, inp_text: typing.Any, source_language='en'):
@@ -175,11 +172,46 @@ class RoucBot(commands.Bot):
                 success_unloads += 1
         return success_unloads
 
+    # database management functions
+
+    # insert guild to db
+    async def insert_guild_to_db(self, guild: disnake.Guild):
+        await self.db.guilds.insert_one({
+            'id': guild.id,
+            'prefix': '+',
+            'locale': 'en',
+            'preferences': {},
+            'channelsprefs': {},
+            'warns': {},
+            'automod': {}
+        })
+        if self.intents.members:
+            for member in guild.members:
+                guildobj = {
+                    'id': member.guild.id,
+                    'last_nickname': member.display_name,
+                    'last_roles': map(lambda r: r.id, member.roles),
+                    'bio': '',
+                    'level': 0,
+                    'xp': 0,
+                    'can_setup': False,
+                    'moderator': False,
+                    'rulesets': {}
+                }
+                if (await self.db.users.find_one({'id': member.id})) is not None:
+                    await self.db.users.update_one({'id': member.id}, {"$push": {'guilds': guildobj}})
+                else:
+                    await self.db.users.insert_one({
+                        'id': member.id,
+                        'blacklisted': False,
+                        'notifications_level': 1,
+                        'guilds': [guildobj]
+                    })
+
     # default events
     async def on_connect(self):
         self.logger.debug("Connected")
         threading.Thread(target=self.load_translations).run()
-        self.db = await asyncpg.connect('postgresql://postgres@localhost/bots', user='roucbot', password='roucbottest')
 
     async def on_ready(self):
         self.load_extensions()
@@ -190,15 +222,8 @@ class RoucBot(commands.Bot):
         self.logger.info("Disconnected")
 
     async def on_guild_join(self, guild: disnake.Guild):
-        await self.db.execute(f"""INSERT INTO guilds (id, locale, preferences, prefix, channelsprefs, warns, automod) VALUES (
-            {guild.id},
-            'en',
-            '{{}}',
-            '+',
-            '{{}}',
-            '{{}}',
-            '{{}}'
-        )""")
+        await self.insert_guild_to_db(guild)
+        # here will be another stuff
 
     async def on_message(self, message: disnake.Message):
         if message.author.bot: return
