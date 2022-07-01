@@ -16,7 +16,7 @@ class Profile(commands.Cog):
         description = 'bot.commands.avatar.description'
     )
     async def avatar(self, ctx: commands.Context, member = None):
-        lang = (await self.bot.db.fetchrow(f"""SELECT locale FROM guilds WHERE id = {ctx.guild.id}"""))['locale']
+        lang = await self.bot.getlang(ctx.guild)
         try: 
             member = await commands.converter.MemberConverter().convert(ctx, member) if member is not None else ctx.author
             title = self.bot.translate('bot.commands.avatar.body.author_avatar', lang) if ctx.author == member else self.bot.translate('bot.commands.avatar.body.member_avatar', lang)
@@ -34,7 +34,7 @@ class Profile(commands.Cog):
         description = 'bot.commands.user.description'
     )
     async def user(self, ctx: commands.Context, user: str = None):
-        lang = (await self.bot.db.fetchrow(f"""SELECT locale FROM guilds WHERE id = {ctx.guild.id}"""))['locale']
+        lang = await self.bot.getlang(ctx.guild)
         translate = lambda s: self.bot.translate("bot.commands.user."+s, lang) # alias
         try:
             user = await commands.converter.MemberConverter().convert(ctx, user) if user is not None else ctx.author

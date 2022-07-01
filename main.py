@@ -51,6 +51,16 @@ async def setlocale(ctx: commands.Context, locale: str = None):
     await bot.db.execute(f"""UPDATE guilds SET locale='{locale}' WHERE id = {ctx.guild.id}""")
     await ctx.send(embed=bot.succembed(bot.translate('locale_set_success', locale).format(locale), locale))
 
+@bot.command()
+async def setprefix(ctx: commands.Context, prefix: str = None):
+    lang = await bot.getlang(ctx.guild)
+    if not ctx.author.guild_permissions.administrator:
+        return await ctx.send(embed=bot.errembed(bot.translate('bot.errors.missing_user_permissions', lang).format('administrator'), lang))
+    if prefix is None:
+        return await ctx.send(embed=bot.errembed(bot.translate('bot.errrors.missed_argument', lang), lang))
+    await bot.db.execute(f"""UPDATE guilds SET prefix='{prefix}' WHERE id = {ctx.guild.id}""")
+    await ctx.send(embed=bot.succembed(bot.translate('bot.commands.setprefix.body.success_set', lang).format(prefix), lang))
+
 @bot.command(
     aliases = ['evaulate', 'exec', 'execute', 'выполнитькод'],
     #run_filters = [commands.filters.bot_owners_only], 
@@ -59,7 +69,9 @@ async def setlocale(ctx: commands.Context, locale: str = None):
 )
 async def eval(ctx: commands.Context, *, to_eval: str = None):
     if ctx.author.id not in bot.owner_ids: return await ctx.send(":x:")
-    try: r = await aeval.aeval(to_eval, globals(), locals())
+    globs = globals()
+    globs['ctx'] = ctx
+    try: r = await aeval.aeval(to_eval, globs, locals())
     except Exception as e: r = e
     await ctx.send(str(r))
 
@@ -68,11 +80,11 @@ async def insertguild(ctx: commands.Context, guilds: commands.Greedy[disnake.Gui
     if ctx.author.id not in bot.owner_ids: return await ctx.send(":x:")
     if len(guilds) == 0: guilds = [ctx.guild]
     for guild in guilds:
-        r = await bot.db.execute(f"""INSERT INTO guilds (id, locale, preferences, prefixes, channelsprefs, warns, automod) VALUES (
+        r = await bot.db.execute(f"""INSERT INTO guilds (id, locale, preferences, prefix, channelsprefs, warns, automod) VALUES (
                 {guild.id},
                 'en',
                 '{{}}',
-                array['+'],
+                '+',
                 '{{}}',
                 '{{}}',
                 '{{}}'

@@ -82,6 +82,10 @@
                     "en": "Top role of target user is higher than your top role.\nYour role: {0}. Target user role: {1}"
                 }
             },
+            "missed_argument": {
+                "ru": "Был пропущен обязательный аргумент: `{0}`",
+                "en": "Missed required argument: `{0}`"
+            },
             "unknown_error": {
                 "ru": "Произошла неизвестная ошибка. {0}",
                 "en": "An unknown error has occurred. {0} "
@@ -100,6 +104,20 @@
             }
         },
         "commands": {
+            "setprefix": {
+                "brief": {
+
+                },
+                "description": {
+
+                },
+                "body": {
+                    "success_set": {
+                        "ru": "Успешно установлен префикс `{0}` для этого сервера",
+                        "en": "Succefully set prefix `{0}` for this server"
+                    }
+                }
+            },
             "eval": {
                 "brief": {
                     "ru": "Выполнить код",

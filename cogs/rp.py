@@ -19,7 +19,7 @@ class RoleplayMain(commands.Cog):
         description="bot.commands.trydo.description"
     )
     async def trydo(self, ctx, *, do):
-        lang = (await self.bot.db.fetchrow(f"""SELECT locale FROM guilds WHERE id = {ctx.guild.id}"""))['locale']
+        lang = await self.bot.getlang(ctx.guild)
         translate = lambda s: self.bot.translate("bot.commands.trydo."+s, lang) # alias
         result, coloring = (translate("body.success"), 0x55ff55) if random.choice((True, False)) else (translate("body.fail"), 0xff5555)
         await ctx.send(embed = disnake.Embed(title = f'{ctx.author.name} {translate("body.tryed")}:', description = f'*{do}*', color = coloring).add_field(name = f'{result}', value = '** **').set_author(name = str(ctx.author), icon_url = ctx.author.avatar.url))
@@ -47,7 +47,7 @@ class RoleplayActions(commands.Cog):
                     return r.status
     
     async def build_embed(self, r, author, action, target=None):
-        lang = (await self.bot.db.fetchrow(f"""SELECT locale FROM guilds WHERE id = {author.guild.id}"""))['locale']
+        lang = await self.bot.getlang(author.guild)
         if target is not None:
             if author == target:
                 return self.bot.errembed(self.bot.translate("bot.errors.self_inapplicable", lang))

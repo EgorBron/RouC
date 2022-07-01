@@ -65,7 +65,7 @@ class RoucBot(commands.Bot):
         intents = disnake.Intents(bans=True, emojis=True, guilds=True, members=True, voice_states=True, messages=True, message_content=True, reactions=True, presences=True)
         # init bot
         super().__init__(
-            command_prefix = self.getprefix,
+            command_prefix = '+',
             intents = intents, 
             case_insensitive = True, 
             description = "RouC bot", 
@@ -73,9 +73,10 @@ class RoucBot(commands.Bot):
             strip_after_prefix = True
         )
     # multiprefix
-    @staticmethod
-    async def getprefix(bot, message):
-        return ['+', bot.user.mention] # multiprefix will be added soon. also when_mentioned_or not working, idk why
+    async def get_prefix(self, message):
+        prefix = (await self.db.fetchrow(f"""SELECT prefix FROM guilds WHERE id = {message.guild.id}"""))
+        prefix = prefix['prefix'] if prefix is not None else '+'
+        return [prefix, self.user.mention] # multiprefix will be added soon. also when_mentioned_or not working, idk why
 
     @staticmethod
     def connect_to_db(address, username, password):
@@ -92,16 +93,19 @@ class RoucBot(commands.Bot):
             raise OSError('Translations file not found!')
         self.translations.load('translations.json')
 
-    async def getlocale(self, source: typing.Union[disnake.Guild, disnake.User, int]):
-        source = self.get_guild(source) if isinstance(source, int) else source
-        if isinstance(source, disnake.Guild):
-            await self.db.fetchrow("SELECT locale FROM guilds")
-
     # translate text for specified object
     def translate(self, source_string: str, source_language = 'en') -> str:
         #self.db.fetchrow()
         #srclang = asyncio.run(self.getlocale(source))
         return self.translations.get(source_string)[source_language]
+
+    # async def getlocale(self, source: typing.Union[disnake.Guild, disnake.User, int]):
+    #     source = self.get_guild(source) if isinstance(source, int) else source
+    #     if isinstance(source, disnake.Guild):
+    #         await self.db.fetchrow("SELECT locale FROM guilds")
+
+    async def getlang(self, guild: disnake.Guild):
+        return (await self.db.fetchrow(f"""SELECT locale FROM guilds WHERE id = {guild.id}"""))['locale']
 
     # minify text for places with characters limit
     def _minify_text(self, visible_characters: int, limit: int, inp_text: typing.Any, source_language='en'):
@@ -184,3 +188,19 @@ class RoucBot(commands.Bot):
     async def on_disconnect(self):
         self.db.close()
         self.logger.info("Disconnected")
+
+    async def on_guild_join(self, guild: disnake.Guild):
+        await self.db.execute(f"""INSERT INTO guilds (id, locale, preferences, prefix, channelsprefs, warns, automod) VALUES (
+            {guild.id},
+            'en',
+            '{{}}',
+            '+',
+            '{{}}',
+            '{{}}',
+            '{{}}'
+        )""")
+
+    async def on_message(self, message: disnake.Message):
+        if message.author.bot: return
+        if message.content.startswith(tuple(await self.get_prefix(self, message))): return await self.process_commands(message)
+
