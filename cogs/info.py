@@ -6,7 +6,7 @@ class Information(commands.Cog):
         self.bot = bot
 
     async def on_cog_load(self):
-        self.bot.logger.debug('Cog "Profile" loaded')
+        self.bot.logger.debug('Cog "Information" loaded')
 
 def setup(bot):
     bot.add_cog(Information(bot))
