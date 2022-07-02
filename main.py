@@ -48,7 +48,7 @@ async def setlocale(ctx: commands.Context, locale: str = None):
         return await ctx.send(embed=bot.errembed(bot.translate('empty_locale')))
     if locale not in bot.translations.get('available_locales'):
         return await ctx.send(embed=bot.errembed(bot.translate('unsupported_locale').format(locale, ", ".join(bot.translations.get('available_locales')))))
-    await bot.db.guilds.update_one({'id': ctx.guild.id}, {"$set": {"prefix": locale}})
+    await bot.db.guilds.update_one({'id': ctx.guild.id}, {"$set": {"locale": locale}})
     await ctx.send(embed=bot.succembed(bot.translate('locale_set_success', locale).format(locale), locale))
 
 @bot.command()
@@ -80,8 +80,10 @@ async def insertguild(ctx: commands.Context, guilds: commands.Greedy[disnake.Gui
     if ctx.author.id not in bot.owner_ids: return await ctx.send(":x:")
     if len(guilds) == 0: guilds = [ctx.guild]
     for guild in guilds:
-        r = await bot.insert_guild_to_db(guild)
-        await ctx.send(r)
+        if (await bot.db.guilds.find_one({'id': guild.id})) is None:
+            r = await bot.insert_guild_to_db(guild)
+            await ctx.send(f'Guild {guild.id} ({guild.name}) successfully inserted')
+        else: await ctx.send(f'Guild {guild.id} ({guild.name}) already inserted')
 
 def load_text(result):
     if result is None:

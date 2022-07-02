@@ -33,9 +33,8 @@ Feel free to create forks/PRs with improvements.
 git clone https://github.com/You/YourForkRepo.git
 ```
 
-3. Do your incredible work
-
-3.1. [optional] Set `rouctoken` enviroment variable with your test data (see [Enviroment](https://github.com/EgorBron/RouC/blob/master/dive_into_sources.md#enviroment-variables)), configure database (see [Setup DB](https://github.com/EgorBron/RouC/blob/master/dive_into_sources.md#setup-database)) and check if everyting works
+3. Do your incredible work.
+> [optional] Set `rouctoken` enviroment variable with your test data (see [Enviroment](https://github.com/EgorBron/RouC/blob/master/dive_into_sources.md#enviroment-variables)), configure database (see [Setup DB](https://github.com/EgorBron/RouC/blob/master/dive_into_sources.md#setup-database)) and check if everyting works
 
 4. Commit:
 

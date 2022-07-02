@@ -60,6 +60,10 @@
                 "ru": [""],
                 "en": [""]
             },
+            "blacklisted": {
+                "ru": "Вы находитесь в чёрном списке бота!",
+                "en": "You are in bot blacklist!"
+            },
             "self_inapplicable": {
                 "ru": "Это действие нельзя совершить с собой.",
                 "en": "This action cannot be done to yourself."

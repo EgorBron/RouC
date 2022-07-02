@@ -59,7 +59,7 @@ class RoucBot(commands.Bot):
         logger.add(sys.stdout, level = 'INFO', format = '<WHITE><black>[{time:YYYY-MM-DD HH:mm:ss}]</black></WHITE> <level>{level}</level>: at <magenta><underline>{file}</underline></magenta> (<cyan>{function}</cyan>, line <yellow>{line}</yellow>):\n\t{message}', colorize = True, backtrace = False, diagnose = True, enqueue = True)
         logger.add('rouc_logs/log_{time:YYYY-MM-DD}.log', level = 'DEBUG', format = '[{time:YYYY-MM-DD HH:mm:ss}] {level}: at {file} ({function}, line {line}):\n\t{message}', colorize = False, backtrace = False, diagnose = True, enqueue = True, encoding = 'utf-8')
         self.logger = logger
-        # postgresql db
+        # mongodb
         self.db: AsyncIOMotorClient = AsyncIOMotorClient('mongodb://localhost:27017').roucdb
         # gateway intents
         intents = disnake.Intents(bans=True, emojis=True, guilds=True, members=True, voice_states=True, messages=True, message_content=True, reactions=True, presences=True)
@@ -176,7 +176,7 @@ class RoucBot(commands.Bot):
 
     # insert guild to db
     async def insert_guild_to_db(self, guild: disnake.Guild):
-        await self.db.guilds.insert_one({
+        ret = await self.db.guilds.insert_one({
             'id': guild.id,
             'prefix': '+',
             'locale': 'en',
@@ -187,10 +187,11 @@ class RoucBot(commands.Bot):
         })
         if self.intents.members:
             for member in guild.members:
+                if member.bot: continue
                 guildobj = {
                     'id': member.guild.id,
                     'last_nickname': member.display_name,
-                    'last_roles': map(lambda r: r.id, member.roles),
+                    'last_roles': list(map(lambda r: r.id, member.roles)),
                     'bio': '',
                     'level': 0,
                     'xp': 0,
@@ -207,6 +208,7 @@ class RoucBot(commands.Bot):
                         'notifications_level': 1,
                         'guilds': [guildobj]
                     })
+        return ret
 
     # default events
     async def on_connect(self):
@@ -218,14 +220,26 @@ class RoucBot(commands.Bot):
         self.logger.success("Started")
 
     async def on_disconnect(self):
-        self.db.close()
+        #self.db.close()
         self.logger.info("Disconnected")
 
     async def on_guild_join(self, guild: disnake.Guild):
-        await self.insert_guild_to_db(guild)
+        if (await self.db.guilds.find_one({'id': guild.id})) is None:
+            await self.insert_guild_to_db(guild)
         # here will be another stuff
 
     async def on_message(self, message: disnake.Message):
+        # checks to prevent some errors and bugs
+        if message.guild is None: return
         if message.author.bot: return
-        if message.content.startswith(tuple(await self.get_prefix(self, message))): return await self.process_commands(message)
+        # process command if it exists
+        if (await self.get_context(message)).command in self.commands: return await self.process_commands(message)
+        # guild object from database
+        guildobj = dict(await self.db.guilds.find_one({'id': message.guild.id}))
+            
 
+    async def on_command(self, ctx: commands.Context):
+        if ctx.command not in self.commands: return
+        lang = await self.getlang(ctx.guild)
+        if (await self.db.users.find_one({'id': ctx.author.id}))['blacklisted']:
+            return await ctx.send(embed=self.errembed(self.translate('bot.errrors.blacklisted', lang), lang))
